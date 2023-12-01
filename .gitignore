@@ -1,0 +1,6 @@
+composer.phar
+config.php
+vendor
+bot.pem
+.env
+.idea

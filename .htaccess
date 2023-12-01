@@ -1,0 +1,25 @@
+deny from all
+
+<Files "manager.php">
+allow from all
+</Files>
+
+<Files "set.php">
+allow from all
+</Files>
+
+<Files "hook.php">
+allow from all
+</Files>
+
+<Files "hook.php:443">
+allow from all
+</Files>
+
+<Files "unset.php">
+allow from all
+</Files>
+
+<Files "">
+allow from all
+</Files>
