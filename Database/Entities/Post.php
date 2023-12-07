@@ -24,7 +24,20 @@ class Post
             ]);
         } catch (\Exception $exception) {
             Request::sendMessage([
-                'chat_id' => 361018101,
+                'chat_id' => getenv('bot_owner_id'),
+                'text' => 'a' . $exception
+            ]);
+        }
+    }
+
+    public static function deleteNonExitstingPost($channel_id, $message_id)
+    {
+        try {
+            Manager::table('posts')->where('post_id', '=', $message_id)
+                ->where('channel_id', '=', $channel_id)->delete();
+        } catch (\Exception $exception) {
+            Request::sendMessage([
+                'chat_id' => getenv('bot_owner_id'),
                 'text' => 'a' . $exception
             ]);
         }

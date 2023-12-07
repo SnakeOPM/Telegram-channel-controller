@@ -62,14 +62,20 @@ class ChannelpostCommand extends SystemCommand
         $photo_hash = Post::hashImage();
         $distance = Post::distancePostValidation($photo_hash);
         if ($distance['distance'] < intval(getenv('PREFER_DISTANCE'))) {
-            Request::deleteMessage([
-                'chat_id' => $channel_id,
-                'message_id' => $message_id
-            ]);
-            Request::forwardMessage([
+            $forwarding = Request::forwardMessage([
                 'chat_id' => $channel_id,
                 'message_id' => $distance['message_id'],
                 'from_chat_id' => $distance['chat_id']
+            ]);
+            $is_forwarded = $forwarding->getOk();
+            if (!$is_forwarded) {
+                Post::deleteNonExitstingPost($distance['chat_id'], $distance['message_id']);
+                Post::createNewChannelPost($channel_post, $photo_hash);
+                return parent::execute();
+            }
+            Request::deleteMessage([
+                'chat_id' => $channel_id,
+                'message_id' => $message_id
             ]);
             Post::deleteImages();
             return parent::execute();
