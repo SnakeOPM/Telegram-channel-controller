@@ -49,7 +49,7 @@ class ChannelpostCommand extends SystemCommand
      */
     public function execute(): ServerResponse
     {
-   //TODO: MAKE NULL PHOTO CHECK, DELETE MESSAGES AFTER 1500 BOT BY ID MAKE BY TIMESTAMP AND IS FORWARDED MESSAGE CHECK
+   //TODO: DELETE MESSAGES AFTER 1500 BOT BY ID MAKE BY TIMESTAMP AND IS FORWARDED MESSAGE CHECK
         // Get the channel post
         $channel_post = $this->getChannelPost();
         if ($channel_post->getType() != 'photo') {
@@ -57,6 +57,10 @@ class ChannelpostCommand extends SystemCommand
         }
         $channel_id = $channel_post->getChat()->getId();
         $message_id = $channel_post->getMessageId();
+        $can_post = Channel::checkPostingRights($channel_id);
+        if (!$can_post) {
+            return parent::execute();
+        }
         $channel_owner_id = Channel::getChannelOwnerId($channel_id);
         Post::downloadImage($channel_post);
         $photo_hash = Post::hashImage();
