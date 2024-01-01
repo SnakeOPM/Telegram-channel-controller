@@ -24,6 +24,7 @@ use app\Database\Entities\User;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
+use mysql_xdevapi\Exception;
 
 class ChannelpostCommand extends SystemCommand
 {
@@ -60,6 +61,14 @@ class ChannelpostCommand extends SystemCommand
         $can_post = Channel::checkPostingRights($channel_id);
         if (!$can_post) {
             return parent::execute();
+        }
+        $forward_origin = $channel_post->getForwardFromChat();
+        if ($forward_origin != null) {
+            $forward_origin_id = $forward_origin->getId();
+            $can_post_in_origin = Channel::checkPostingRights($forward_origin_id); #check if bot, can post in channel that he's forwarding from
+            if ($can_post_in_origin) {
+                return parent::execute();
+            }
         }
         $channel_owner_id = Channel::getChannelOwnerId($channel_id);
         Post::downloadImage($channel_post);

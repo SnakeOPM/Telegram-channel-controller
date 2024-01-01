@@ -23,6 +23,9 @@ class Channel
 
     public static function checkPostingRights($chat_id): bool
     {
+        if ($chat_id === null) {
+            return false;
+        }
         $bot_id = getenv('BOT_USER_ID');
         $chat_permissions = Request::getChatMember(['chat_id' => intval($chat_id), 'user_id' => intval($bot_id)]);
         if (!$chat_permissions->getOk()) {
