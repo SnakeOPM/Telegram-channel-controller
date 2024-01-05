@@ -64,13 +64,8 @@ class ChannelpostCommand extends SystemCommand
         }
         $forward_origin = $channel_post->getForwardFromChat();
         if ($forward_origin != null) {
-            $forward_origin_id = $forward_origin->getId();
-            $can_post_in_origin = Channel::checkPostingRights($forward_origin_id); #check if bot, can post in channel that he's forwarding from
-            if ($can_post_in_origin) {
-                return parent::execute();
-            }
+            return parent::execute();
         }
-        $channel_owner_id = Channel::getChannelOwnerId($channel_id);
         Post::downloadImage($channel_post);
         $photo_hash = Post::hashImage();
         $distance = Post::distancePostValidation($photo_hash);
