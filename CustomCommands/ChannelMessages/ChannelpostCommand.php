@@ -21,6 +21,7 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 use app\Database\Entities\Channel;
 use app\Database\Entities\Post;
 use app\Database\Entities\User;
+use app\Messenger\Messenger;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
@@ -28,6 +29,8 @@ use mysql_xdevapi\Exception;
 
 class ChannelpostCommand extends SystemCommand
 {
+    use Messenger;
+
     /**
      * @var string
      */
@@ -50,7 +53,7 @@ class ChannelpostCommand extends SystemCommand
      */
     public function execute(): ServerResponse
     {
-   //TODO: DELETE MESSAGES AFTER 1500 BOT BY ID MAKE BY TIMESTAMP AND IS FORWARDED MESSAGE CHECK
+        //TODO: DELETE MESSAGES AFTER 1500 BOT BY ID MAKE BY TIMESTAMP AND IS FORWARDED MESSAGE CHECK
         // Get the channel post
         $channel_post = $this->getChannelPost();
         if ($channel_post->getType() != 'photo') {
@@ -70,6 +73,11 @@ class ChannelpostCommand extends SystemCommand
         $photo_hash = Post::hashImage();
         $distance = Post::distancePostValidation($photo_hash);
         if ($distance['distance'] < intval(getenv('PREFER_DISTANCE'))) {
+            if ($distance['chat_id'] == $channel_id) {
+                $owner = Channel::getChannelOwnerId($channel_id);
+                $this->sendWarningAboutSamePicInOneChannel($owner);
+                return parent::execute();
+            }
             $forwarding = Request::forwardMessage([
                 'chat_id' => $channel_id,
                 'message_id' => $distance['message_id'],

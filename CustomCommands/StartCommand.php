@@ -74,7 +74,8 @@ class StartCommand extends SystemCommand
         User::createNewUser($user_id, $username, $first_name, $last_name, $chat_id);
         return $this->replyToChat(
             'Hi there!' . PHP_EOL .
-            'Type /help to see all commands!'
+            'I will help you not to accidentally post same pictures from the channels that added me, just add me' .
+            'to your channel and give me right to delete and post messages'
         );
     }
 }
